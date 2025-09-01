@@ -1,0 +1,27 @@
+
+@import "tailwindcss";
+
+
+/* ====== ФОН (ОСТАВЛЯЕМ КАК ЕСТЬ) ====== */
+.bg{
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(1200px 800px at 10% -10%, rgba(124,92,255,.15), transparent 60%),
+              radial-gradient(1200px 800px at 110% 110%, rgba(74,209,255,.12), transparent 60%),
+              linear-gradient(180deg, #0b1220, #101726); 
+}
+.blob{ position:absolute; width:42vmax; height:42vmax; filter: blur(60px); opacity:.35; border-radius:50%; }
+.blob.b1{ left:-10vmax; top:-8vmax; background:#7c5cff; animation: float1 22s ease-in-out infinite;}
+.blob.b2{ right:-8vmax; bottom:-6vmax; background:#4ad1ff; animation: float2 26s ease-in-out infinite;}
+.blob.b3{ left:50%; top:55%; transform:translate(-50%,-50%); background:#2dd4bf; width:34vmax; height:34vmax; animation: float3 30s ease-in-out infinite;}
+@keyframes float1{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(30px)} }
+@keyframes float2{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+@keyframes float3{ 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(calc(-50% + 20px),calc(-50% - 10px)) scale(1.04)} }
+
+.grid-overlay{
+  position:absolute; inset:0; background:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px) 0 0/ 28px 28px,
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px) 0 0/ 28px 28px;
+  mask-image: radial-gradient(ellipse at 50% 30%, rgba(0,0,0,.45), transparent 70%);
+}
+
+

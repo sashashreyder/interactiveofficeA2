@@ -100,16 +100,18 @@ const App: React.FC = () => {
         if (!selectedVocab) {
           return (
 <ContentWrapper>
-  <ExerciseSelector
-    title="Выберите упражнение по лексике (A0)"
-    items={[
-      { key: "vocab1", label: "Vocabulary 1 — Introduction to Business Sector (A0)", icon: "📘" },
-      { key: "vocab2", label: "Vocabulary 2 — Instrumentary of a Manager & Manager’s Activities (A0)", icon: "📗" },
-      { key: "vocab3", label: "Vocabulary 3 — Telling about Previous Work Experience (A0)", icon: "📙" },
-    ]}
-    onSelect={(key: VocabKey) => setSelectedVocab(key)}
-    onBack={() => setGameState(p => ({ ...p, currentMode: "main" }))}
-  />
+<ExerciseSelector
+  title="Выберите упражнение по лексике (A2)"
+  items={[
+    { key: "vocab1", label: "📘 Vocabulary 1 — Data & Finance", icon: "📘" },
+    { key: "vocab2", label: "📗 Vocabulary 2 — Meetings & Collaboration", icon: "📗" },
+    { key: "vocab3", label: "📙 Vocabulary 3 — Progression & Clients", icon: "📙" },
+  ]}
+  onSelect={(key: VocabKey) => setSelectedVocab(key)}
+  onBack={() => setGameState(p => ({ ...p, currentMode: "main" }))}
+ />
+
+
 </ContentWrapper>
           );
         }
@@ -129,15 +131,17 @@ const App: React.FC = () => {
           return (
             <ContentWrapper>
   <ExerciseSelector
-    title="Выберите упражнение по грамматике (A0)"
-    items={[
-      { key: "grammar1", label: "Grammar 1 — Personal pronouns & to be · Articles (a/an, the) · have/has · Possessives (A0)", icon: "✏️" },
-      { key: "grammar2", label: "Grammar 2 — Present Simple · can/can’t · Prepositions at/on/in (A0)", icon: "✏️" },
-      { key: "grammar3", label: "Grammar 3 — Basic questions (who/what/where/why) · Short answers · This/That/These/Those (A0)", icon: "✏️" },
-    ]}
-    onSelect={(key: GrammarKey) => setSelectedGrammar(key)}
-    onBack={() => setGameState(p => ({ ...p, currentMode: "main" }))}
-  />
+  title="Выберите упражнение по грамматике (A2)"
+  items={[
+    { key: "grammar1", label: "📘 Grammar 1 — Degrees of Comparison · Present Perfect · Past Continuous (A2)", icon: "✏️" },
+    { key: "grammar2", label: "📗 Grammar 2 — Past Perfect · Modal Verbs: May/Might · Have to (A2)", icon: "✏️" },
+    { key: "grammar3", label: "📙 Grammar 3 — Used to · Be/Get used to (A2)", icon: "✏️" },
+  ]}
+  onSelect={(key: GrammarKey) => setSelectedGrammar(key)}
+  onBack={() => setGameState(p => ({ ...p, currentMode: "main" }))}
+ />
+
+
 </ContentWrapper>
           );
         }

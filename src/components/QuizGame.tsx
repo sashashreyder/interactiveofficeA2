@@ -5,10 +5,11 @@ interface Question {
   type: "vocabulary" | "grammar" | "scenario" | "critical_thinking";
   difficulty: "beginner" | "intermediate";
   question: string;
-  options?: string[]; 
-  correctAnswer: string;
-  explanation: string;
-  explanationRu: string;
+  options?: string[];               
+  correctAnswer: string;             
+  acceptableAnswers?: string[];      
+  explanation: string;              
+  explanationRu: string;            
   points: number;
   category: string;
   hintRu?: string;
@@ -48,6 +49,12 @@ const QuestionProgress: React.FC<{ current: number; total: number; correct: numb
   );
 };
 
+
+const norm = (s: string) =>
+  s.trim().toLowerCase()
+    .replace(/[.,!?;:()"'`]/g, "")
+    .replace(/\s+/g, " ");
+
 const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -73,10 +80,14 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
   const isLast = currentQuestionIndex === questions.length - 1;
   const badge = typeBadge(q.type);
 
-  const checkAnswer = (answer: string) => {
-    const normalized = answer.trim().toLowerCase();
-    const correct = normalized === q.correctAnswer.trim().toLowerCase();
-    setSelectedAnswer(answer);
+  const checkAnswer = (answerRaw: string) => {
+    const userN = norm(answerRaw);
+    const correctN = norm(q.correctAnswer);
+    const alts = (q.acceptableAnswers ?? []).map(norm);
+
+    const correct = userN === correctN || alts.includes(userN);
+
+    setSelectedAnswer(answerRaw);
     setShowExplanation(true);
     setShowRussian(false);
     setShowHint(false);
@@ -101,6 +112,7 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
     const wrongIds = answers.filter(a => !a.correct).map(a => a.id);
     const filtered = questions.filter(qq => wrongIds.includes(qq.id));
     if (filtered.length) {
+    
       setCurrentQuestionIndex(0);
       setSelectedAnswer(null);
       setInputValue("");
@@ -140,6 +152,11 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
     );
   }
 
+  const userIsCorrect =
+    selectedAnswer !== null &&
+    norm(selectedAnswer) === norm(q.correctAnswer) ||
+    (q.acceptableAnswers ?? []).map(norm).includes(norm(selectedAnswer ?? ""));
+
   return (
     <div className="rounded-2xl bg-slate-900/40 backdrop-blur-xl border border-white/10 p-6 text-white max-w-3xl mx-auto shadow-lg">
       <div className="mb-4">
@@ -161,9 +178,10 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
       <div className="mb-4 text-base md:text-lg font-medium leading-snug">{q.question}</div>
 
       {q.options && q.options.length > 0 ? (
+        // Multiple choice
         <div className="grid gap-3 mb-4">
           {q.options.map((opt, idx) => {
-            const isCorrect = opt.toLowerCase() === q.correctAnswer.toLowerCase();
+            const isCorrect = norm(opt) === norm(q.correctAnswer) || (q.acceptableAnswers ?? []).map(norm).includes(norm(opt));
             const isSelected = opt === selectedAnswer;
             const base = "px-4 py-3 rounded-lg text-left transition";
             const idle = "bg-white/10 hover:bg-white/20";
@@ -184,12 +202,13 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
           })}
         </div>
       ) : (
-   
+        // Gap-fill
         <div className="mb-4">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !showExplanation) checkAnswer(inputValue); }}
             disabled={showExplanation}
             placeholder="Введите слово..."
             className="w-full px-4 py-3 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
@@ -218,26 +237,33 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
       {showExplanation && (
         <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
           <h4 className="font-semibold mb-2">
-            {selectedAnswer?.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()
-              ? "✅ Правильно!"
-              : "❌ Неправильно"}
+            {userIsCorrect ? "✅ Правильно!" : "❌ Неправильно"}
           </h4>
+
+          {!userIsCorrect && (
+            <p className="mb-2 text-slate-200">
+              Правильный ответ: <strong>{q.correctAnswer}</strong>
+              {q.acceptableAnswers?.length ? <> (варианты: <em>{q.acceptableAnswers.join(", ")}</em>)</> : null}
+            </p>
+          )}
+
           <p className="mb-3 text-slate-100/90">{q.explanation}</p>
+
           <button
             onClick={() => setShowRussian(v => !v)}
             className="px-3 py-1 rounded-full bg-teal-500/80 hover:bg-teal-500 text-white text-xs"
           >
             {showRussian ? "Скрыть перевод" : "Показать перевод"}
           </button>
+
           {showRussian && (
             <div className="mt-3 p-3 rounded bg-white/10 border border-white/10 text-slate-100/90">
               {q.explanationRu}
             </div>
           )}
+
           <div className="mt-3 font-semibold">
-            {selectedAnswer?.trim().toLowerCase() === q.correctAnswer.trim().toLowerCase()
-              ? `+${q.points} очков опыта`
-              : "0 очков"}
+            {userIsCorrect ? `+${q.points} очков опыта` : "0 очков"}
           </div>
         </div>
       )}
@@ -291,6 +317,7 @@ const QuizGame: React.FC<QuizGameProps> = ({ questions, onAnswer, onBack }) => {
 };
 
 export default QuizGame;
+
 
 
 
